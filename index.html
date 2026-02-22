@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Income Tax Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .results-section {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e1e8ff;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ff;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            margin: -10px -10px 20px -10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item.total {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border-left: none;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-item.total .result-value {
+            color: white;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+            color: #667eea;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇮🇳 India Income Tax Calculator</h1>
+            <p>Calculate your tax liability for Financial Year 2024-25 (Assessment Year 2025-26)</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">📊 Income Details</div>
+                
+                <div class="form-group">
+                    <label for="taxRegime">Tax Regime:</label>
+                    <select id="taxRegime" onchange="updateCalculation()">
+                        <option value="new">New Tax Regime (Default)</option>
+                        <option value="old">Old Tax Regime</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="salary">
+                        Salary Income (Annual)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Your total annual salary after standard deduction</span>
+                        </span>
+                    </label>
+                    <input type="number" id="salary" placeholder="Enter salary income" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="businessIncome">
+                        Business/Professional Income
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Income from business or profession after all deductions</span>
+                        </span>
+                    </label>
+                    <input type="number" id="businessIncome" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="houseProperty">
+                        House Property Income
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Net rental income after standard deduction of 30%</span>
+                        </span>
+                    </label>
+                    <input type="number" id="houseProperty" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="stcg">
+                        Short-Term Capital Gains (STCG)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Gains from assets held for less than specified period</span>
+                        </span>
+                    </label>
+                    <input type="number" id="stcg" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="ltcg">
+                        Long-Term Capital Gains (LTCG)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Gains from assets held for more than specified period</span>
+                        </span>
+                    </label>
+                    <input type="number" id="ltcg" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="dividend">Dividend Income:</label>
+                    <input type="number" id="dividend" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="interest">Interest Income:</label>
+                    <input type="number" id="interest" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="foLoss">
+                        F&O Trading Loss
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Losses from Futures & Options trading (can offset other income except salary)</span>
+                        </span>
+                    </label>
+                    <input type="number" id="foLoss" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <div class="form-group">
+                    <label for="deductions">
+                        Total Deductions (80C, 80D, etc.)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Only applicable for Old Tax Regime</span>
+                        </span>
+                    </label>
+                    <input type="number" id="deductions" placeholder="0" oninput="updateCalculation()">
+                </div>
+
+                <button class="calculate-btn" onclick="updateCalculation()">🧮 Calculate Tax</button>
+            </div>
+
+            <div class="results-section">
+                <div class="section-title">💰 Tax Calculation Results</div>
+                <div id="results">
+                    <div class="result-item">
+                        <span class="result-label">Enter income details to calculate tax</span>
+                        <span class="result-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCalculation() {
+            calculateTax();
+        }
+
+        function calculateTax() {
+            // Get input values
+            const taxRegime = document.getElementById('taxRegime').value;
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const businessIncome = parseFloat(document.getElementById('businessIncome').value) || 0;
+            const houseProperty = parseFloat(document.getElementById('houseProperty').value) || 0;
+            const stcg = parseFloat(document.getElementById('stcg').value) || 0;
+            const ltcg = parseFloat(document.getElementById('ltcg').value) || 0;
+            const dividend = parseFloat(document.getElementById('dividend').value) || 0;
+            const interest = parseFloat(document.getElementById('interest').value) || 0;
+            const foLoss = parseFloat(document.getElementById('foLoss').value) || 0;
+            const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+
+            // Calculate adjusted income after F&O loss set-off
+            const otherIncome = Math.max(0, businessIncome + houseProperty + dividend + interest - foLoss);
+            
+            // Standard deduction for salary (₹50,000 for FY 2024-25)
+            const standardDeduction = Math.min(salary, 50000);
+            const adjustedSalary = Math.max(0, salary - standardDeduction);
+            
+            // Total income before deductions
+            const totalIncomeBeforeDeductions = adjustedSalary + otherIncome + stcg + ltcg;
+            
+            // Apply deductions only for old regime
+            const applicableDeductions = taxRegime === 'old' ? deductions : 0;
+            const taxableIncome = Math.max(0, adjustedSalary + otherIncome - applicableDeductions);
+
+            // Calculate tax on regular income (salary + other income)
+            let regularIncomeTax = 0;
+            
+            if (taxRegime === 'new') {
+                // New Tax Regime Slabs (FY 2024-25)
+                if (taxableIncome <= 300000) regularIncomeTax = 0;
+                else if (taxableIncome <= 700000) regularIncomeTax = (taxableIncome - 300000) * 0.05;
+                else if (taxableIncome <= 1000000) regularIncomeTax = 20000 + (taxableIncome - 700000) * 0.10;
+                else if (taxableIncome <= 1200000) regularIncomeTax = 50000 + (taxableIncome - 1000000) * 0.15;
+                else if (taxableIncome <= 1500000) regularIncomeTax = 80000 + (taxableIncome - 1200000) * 0.20;
+                else regularIncomeTax = 140000 + (taxableIncome - 1500000) * 0.30;
+            } else {
+                // Old Tax Regime Slabs
+                if (taxableIncome <= 250000) regularIncomeTax = 0;
+                else if (taxableIncome <= 500000) regularIncomeTax = (taxableIncome - 250000) * 0.05;
+                else if (taxableIncome <= 1000000) regularIncomeTax = 12500 + (taxableIncome - 500000) * 0.20;
+                else regularIncomeTax = 112500 + (taxableIncome - 1000000) * 0.30;
+            }
+
+            // Tax on STCG (20% for equity, 30% for others - simplified to 20%)
+            const stcgTax = stcg * 0.20;
+            
+            // Tax on LTCG (10% above ₹1 lakh for equity, simplified)
+            const ltcgExemption = 100000;
+            const taxableLtcg = Math.max(0, ltcg - ltcgExemption);
+            const ltcgTax = taxableLtcg * 0.10;
+
+            // Total tax before surcharge and cess
+            const baseTax = regularIncomeTax + stcgTax + ltcgTax;
+            const totalIncome = totalIncomeBeforeDeductions;
+
+            // Calculate surcharge
+            let surchargeRate = 0;
+            if (totalIncome > 5000000 && totalIncome <= 10000000) surchargeRate = 0.10;
+            else if (totalIncome > 10000000 && totalIncome <= 20000000) surchargeRate = 0.15;
+            else if (totalIncome > 20000000 && totalIncome <= 50000000) surchargeRate = 0.25;
+            else if (totalIncome > 50000000) surchargeRate = 0.37;
+
+            const surcharge = baseTax * surchargeRate;
+
+            // Health & Education Cess (4%)
+            const cess = (baseTax + surcharge) * 0.04;
+
+            // Total tax payable
+            const totalTaxPayable = baseTax + surcharge + cess;
+
+            // Tax rebate for new regime (₹25,000 if income up to ₹7 lakh)
+            let rebate = 0;
+            if (taxRegime === 'new' && totalIncome <= 700000) {
+                rebate = Math.min(25000, totalTaxPayable);
+            }
+            // Tax rebate for old regime (₹12,500 if income up to ₹5 lakh)
+            else if (taxRegime === 'old' && totalIncome <= 500000) {
+                rebate = Math.min(12500, totalTaxPayable);
+            }
+
+            const finalTaxPayable = Math.max(0, totalTaxPayable - rebate);
+
+            // Display results
+            displayResults({
+                taxRegime,
+                totalIncome,
+                taxableIncome,
+                standardDeduction,
+                applicableDeductions,
+                regularIncomeTax,
+                stcgTax,
+                ltcgTax,
+                baseTax,
+                surchargeRate,
+                surcharge,
+                cess,
+                rebate,
+                totalTaxPayable,
+                finalTaxPayable
+            });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Tax Regime</span>
+                    <span class="result-value">${data.taxRegime === 'new' ? 'New Regime' : 'Old Regime'}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Income</span>
+                    <span class="result-value">₹${data.totalIncome.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Standard Deduction</span>
+                    <span class="result-value">₹${data.standardDeduction.toLocaleString('en-IN')}</span>
+                </div>
+                ${data.applicableDeductions > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">Other Deductions</span>
+                    <span class="result-value">₹${data.applicableDeductions.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+                <div class="result-item">
+                    <span class="result-label">Taxable Income</span>
+                    <span class="result-value">₹${data.taxableIncome.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tax on Regular Income</span>
+                    <span class="result-value">₹${data.regularIncomeTax.toLocaleString('en-IN')}</span>
+                </div>
+                ${data.stcgTax > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">Tax on STCG (20%)</span>
+                    <span class="result-value">₹${data.stcgTax.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+                ${data.ltcgTax > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">Tax on LTCG (10%)</span>
+                    <span class="result-value">₹${data.ltcgTax.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+                <div class="result-item">
+                    <span class="result-label">Base Tax</span>
+                    <span class="result-value">₹${data.baseTax.toLocaleString('en-IN')}</span>
+                </div>
+                ${data.surcharge > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">Surcharge (${(data.surchargeRate * 100)}%)</span>
+                    <span class="result-value">₹${data.surcharge.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+                <div class="result-item">
+                    <span class="result-label">Health & Education Cess (4%)</span>
+                    <span class="result-value">₹${data.cess.toLocaleString('en-IN')}</span>
+                </div>
+                ${data.rebate > 0 ? `
+                <div class="result-item">
+                    <span class="result-label">Tax Rebate</span>
+                    <span class="result-value">-₹${data.rebate.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+                <div class="result-item total">
+                    <span class="result-label">Total Tax Payable</span>
+                    <span class="result-value">₹${data.finalTaxPayable.toLocaleString('en-IN')}</span>
+                </div>
+            `;
+        }
+
+        // Initialize calculation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalculation();
+        });
+    </script>
+</body>
+</html>
