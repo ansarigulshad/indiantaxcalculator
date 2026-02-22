@@ -3,7 +3,6 @@
 A comprehensive web-based Income Tax Calculator for Indian taxpayers to calculate their tax liability for Financial Year 2024-25 (Assessment Year 2025-26).
 
 ![Income Tax Calculator](https://img.shields.io/badge/Tax%20Calculator-India-orange)
-![License](https://img.shields.io/badge/license-MIT-blue)
 ![HTML](https://img.shields.io/badge/HTML-5-red)
 ![CSS](https://img.shields.io/badge/CSS-3-blue)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
@@ -244,7 +243,10 @@ Contributions are welcome! Here's how you can help:
 - Does not handle loss carry forward from previous years
 - Simplified calculation for capital gains (doesn't differentiate between equity/debt/real estate)
 
-## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 👨‍💻 Author
 
+**Gulshad**
+
+- GitHub: [@gulshadansari](https://github.com/ansarigulshad/)
+- Project Link: [indiantaxcalculator](https://ansarigulshad.github.io/indiantaxcalculator/)
